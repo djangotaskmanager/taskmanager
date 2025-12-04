@@ -1,0 +1,82 @@
+<!-- taskmanager-web-app/taskmanager_app/templates/taskmanager_app/todo_table_view.html -->
+{% extends "base.html" %}
+
+{% block head %}
+   <style>
+      td {
+      text-align: center;
+      }
+      .left-align {
+      text-align: left;
+      }
+   </style>
+   <title>TM - Table view</title>
+{% endblock %}
+
+{% block content %}
+<div class="header" id="header02">
+   <h4>Item table view</h4>
+</div>
+<div class="between-header02-and-fixed-content-bottom">
+   <table>
+      <thead>
+         <tr>
+            <th><a href="?sort_by=title&sort_order={{ sort_order|default:'asc' }}&filter_title={{ filter_title|default:'' }}&filter_tags={{ filter_tags|default:'' }}&completed_state={{completed_state|default:''}}">Title</a></th>
+            <th class="table-cell">Tags</th>
+            <th class="table-cell"><a href="?sort_by=completed&sort_order={{ sort_order|default:'asc' }}&filter_title={{ filter_title|default:'' }}&filter_tags={{ filter_tags|default:'' }}&completed_state={{completed_state|default:''}}">Completed</a></th>
+            <th class="table-cell"><a href="?sort_by=date_start_earliest&sort_order={{ sort_order|default:'asc' }}&filter_title={{ filter_title|default:'' }}&filter_tags={{ filter_tags|default:'' }}&completed_state={{completed_state|default:''}}">Start date</a></th>
+            <th class="table-cell"><a href="?sort_by=date_start_latest&sort_order={{ sort_order|default:'asc' }}&filter_title={{ filter_title|default:'' }}&filter_tags={{ filter_tags|default:'' }}&completed_state={{completed_state|default:''}}">Latest date</a></th>
+            <th class="table-cell"><a href="?sort_by=date_due&sort_order={{ sort_order|default:'asc' }}&filter_title={{ filter_title|default:'' }}&filter_tags={{ filter_tags|default:'' }}&completed_state={{completed_state|default:''}}">Due date</a></th>
+            <th class="table-cell"><a href="?sort_by=sorting_priority&sort_order={{ sort_order|default:'asc' }}&filter_title={{ filter_title|default:'' }}&filter_tags={{ filter_tags|default:'' }}&completed_state={{completed_state|default:''}}">Priority</a></th>
+            <!-- Add more table headers for other fields as needed -->
+         </tr>
+         <tr>
+            <th>
+               <form method="GET" action="{% url 'todo_table_view' %}">
+                  <input name="filter_title" type="text" {% if request.GET.filter_title %}value="{{request.GET.filter_title}}"{%else%}placeholder="Title filter..."{% endif %}>
+               </form>
+            </th>
+            <th>
+               <form method="GET" action="{% url 'todo_table_view' %}">
+                  <input name="filter_tags" type="text" {% if request.GET.filter_tags %}value="{{request.GET.filter_tags}}"{%else%}placeholder="Tags filter..."{% endif %}>
+               </form>
+            </th>
+            <th class="table-cell">
+               <form id="filter-form" method="GET">
+                  <select name="completed_state" id="showCompletedSelect">
+                  <option value="all" {% if request.GET.completed_state == "all" %}selected{% endif %}>All</option>
+                  <option value="completed" {% if request.GET.completed_state == "completed" %}selected{% endif %}>Completed</option>
+                  <option value="not_completed" {% if request.GET.completed_state == "not_completed" %}selected{% endif %}>Not Completed</option>
+                  </select>
+               </form>
+            </th>
+         </tr>
+      </thead>
+      <tbody>
+         {% for item in items %}
+         <tr>
+            <td class="left-align"><a href="{{ item.get_absolute_url }}">{{ item.title }}</a></td>
+            <td class="left-align">
+               {% if item.tags.all %}
+                  {% for tag in item.tags.all %}
+                        {% include 'taskmanager_app/html_snippets/tags_without_links.html' %}
+                     {% endfor %}
+               {% endif %}
+            </td>
+            <td class="table-cell">{% if item.completed == True %}&#x2713;{% else %}&#x2717;{% endif %}</td>
+            <td class="table-cell">{{ item.date_start_earliest|date:"d/m/y" }}</td>
+            <td class="table-cell">{{ item.date_start_latest|date:"d/m/y" }}</td>
+            <td class="table-cell">{{ item.date_due|date:"d/m/y" }}</td>
+            <td class="table-cell">{{ item.sorting_priority }}</td>
+            <!-- Add more table cells for other fields as needed -->
+         </tr>
+         {% endfor %}
+      </tbody>
+   </table>
+</div>
+<div class="fixed-content-bottom">
+   <p>
+      <a href="{% url 'todo_list_view' %}"> Go to list view </a>     
+   </p>
+</div>
+{% endblock %}

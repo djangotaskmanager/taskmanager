@@ -1,0 +1,9 @@
+{% load custom_filters %}
+
+{% for tag in item.tags.all %}
+    {% if tag.name in main_categories %}
+        <span class="main-category-vertical-bar"
+            style="background-color: {{ main_categories|get_key:tag.name }};">
+        </span>
+    {% endif %}
+{% endfor %}

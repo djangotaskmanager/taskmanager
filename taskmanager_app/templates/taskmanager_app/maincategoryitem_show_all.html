@@ -1,0 +1,67 @@
+<!-- taskmanager-web-app/taskmanager_app/templates/taskmanager_app/maincategoryitem_show_all.html -->
+{% extends "base.html" %}
+{% load static %}
+{% load martortags %}
+{% load custom_filters %}
+
+{% block head %}
+   <title>TM - Main categories</title>
+{% endblock %}
+
+{% block content %}
+<div class="header" id="header02">
+   <div>
+      <h4>Main categories</h4>
+   </div>
+   <div class="dropdown_lists">
+      {% include 'taskmanager_app/html_snippets/dropdown_completed_state.html' %} 
+      {% include 'taskmanager_app/html_snippets/dropdown_dates_state.html' %} 
+      {% include 'taskmanager_app/html_snippets/dropdown_expand_item_state.html' %}
+   </div>
+   <div class="dropdown_lists">
+      {% include 'taskmanager_app/html_snippets/filter_items_field.html' %}        
+   </div>
+</div>
+<div class="between-header02-and-fixed-content-bottom">
+   {% if all_grouped_todo_items %}
+      {% for main_category, grouped_todo_items in all_grouped_todo_items.items %}
+         <div class="header" id="header03">
+            {% if grouped_todo_items %}
+               {% if main_category == "Other" %}
+                  {{ main_category }}
+               {% else %}
+                  <a href="{% url 'main_category-show' main_category|lower %} ">
+                     {{ main_category }}
+                  </a>
+               {% endif %}  
+         </div>
+               {% for tag, items in grouped_todo_items.items %}
+                  <button type="button" class="header item_collapsible_button {% if request.GET.expand_item_state == 'expanded' %}item_collapsible_button_active{% endif %}" id="header04">
+                     {% if tag %}
+                        {% if main_category_links|get_key:tag.name %}
+                           <a href="{% url 'main_category-show' tag|lower %} ">
+                              {{ tag }}
+                           </a>
+                        {% else %}
+                           {{ tag }}
+                        {% endif %}   
+                     {% endif %}
+                     {% if main_category == "Other" %}
+                        Items outside main categories
+                     {% endif %}
+                  </button>
+                  <div class="item_collapsible_content" style="{% if request.GET.expand_item_state != 'expanded' %}display: none;{% endif %}">
+                     {% if items %}    
+                        {% include 'taskmanager_app/html_snippets/list_of_items.html' %}
+                     {% else %}
+                        No items to show.
+                     {% endif %}
+                  </div>
+               {% endfor %}
+            {% endif %}
+      {% endfor %}
+   {% else %}
+      No items to show.
+   {% endif %}
+</div>
+{% endblock %}

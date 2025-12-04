@@ -1,0 +1,62 @@
+<!-- taskmanager-web-app/taskmanager_app/templates/taskmanager_app/maincategoryitem_show.html -->
+{% extends "base.html" %}
+{% load static %}
+{% load martortags %}
+{% load custom_filters %}
+
+{% block head %}
+   <title>TM - {{ title }}</title>
+{% endblock %}
+
+{% block content %}
+<div class="header" id="header02">
+   <div>
+      <h4>{{ title }}</h4>
+   </div>
+   <div style="font-size: medium;">
+      {% if description_field %}
+         {{description_field|safe_markdown}}
+         <a href="{% url 'item-edit' object.text_field_from_item %}" style="font-size: small;">Edit above text</a>
+         <p style="margin:5px;"></p>
+      {% endif %}
+   </div>
+   <div class="dropdown_lists">
+      {% include 'taskmanager_app/html_snippets/dropdown_completed_state.html' %} 
+      {% include 'taskmanager_app/html_snippets/dropdown_dates_state.html' %} 
+      {% include 'taskmanager_app/html_snippets/dropdown_expand_item_state.html' %} 
+   </div>
+   <div class="dropdown_lists">
+      {% include 'taskmanager_app/html_snippets/filter_items_field.html' %}  
+   </div>
+</div>
+<div class="between-header02-and-fixed-content-bottom">
+   {% if grouped_todo_items %}
+      {% for tag, items in grouped_todo_items.items %}
+         <div class="header" id="header03">
+            {% if main_category_links|get_key:tag.name %}
+               <a href="{% url 'main_category-show' tag|lower %} ">
+                  {{ tag }}
+               </a>
+            {% else %}
+               {{ tag }}
+            {% endif %}   
+         </div>
+         {% include 'taskmanager_app/html_snippets/list_of_items.html' %}
+      {% endfor %}
+   {% else %}
+      No todo items to show.
+   {% endif %}
+</div>
+<div class="fixed-content-bottom">
+   <input
+   value="Edit category"
+   type="button"
+   onclick="location.href=
+   '{% url "main_category-edit" title|lower %}'">
+   <input
+   value="Delete category"
+   type="button"
+   onclick="location.href=
+   '{% url "main_category-delete" title|lower %}'">
+</div>
+{% endblock %}

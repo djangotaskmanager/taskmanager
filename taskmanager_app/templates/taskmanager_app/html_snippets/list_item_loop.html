@@ -1,0 +1,7 @@
+{% load martortags %}
+
+<button type="button" class="item-header item_collapsible_button {% if request.GET.expand_item_state == 'expanded' %}item_collapsible_button_active{% endif %}">
+    {% include 'taskmanager_app/html_snippets/main_category_vertical_bar.html' %}
+    <span class="item-title">{{ item.title }}</span>
+</button>
+{% include 'taskmanager_app/html_snippets/item_collapsible_content.html' %}

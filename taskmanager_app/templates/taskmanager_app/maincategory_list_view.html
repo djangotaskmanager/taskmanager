@@ -1,0 +1,38 @@
+<!-- taskmanager-web-app/taskmanager_app/templates/taskmanager_app/maincategory_list_view.html -->
+{% extends "base.html" %}
+
+{% block content %}
+   <div class="header" id="header02">
+      <div style="font-size: x-large;">
+         <a href="{% url 'sorting_view' %}" >Sort by date</a>
+      </div>
+      <div style="font-size: x-large;">
+         <a href="{% url 'main_category-show-all' %}" >Main categories</a>
+      </div>
+   </div>
+   <div>
+      {% for category in object_list %}
+         <div style="font-size: medium; margin-left: 10px">
+            <a href="{% url 'main_category-show' category.main_category.all.0.name|lower %} ">
+            {{ category.main_category.all.0.name }}
+            </a>
+         </div>
+      {% empty %}
+         <p>There are no main category items to show.</p>
+      {% endfor %}
+      <br>
+      <div style="font-size: large;">
+         <div>
+            <a href="{% url 'todo_list_view' %}">List view</a>
+         </div>
+         <div>
+            <a href="{% url 'todo_table_view' %}">Table view</a>   
+         </div> 
+      </div>
+      <div class="fixed-content-bottom">
+         <p>
+            <a href='{% url "main_category-add" %}'>Add new main category</a>
+         </p>
+      </div>
+   </div>
+{% endblock %}

@@ -1,0 +1,21 @@
+<!-- taskmanager-web-app/taskmanager_app/templates/taskmanager_app/search_results.html -->
+{% extends "base.html" %}
+
+{% block head %}
+  <title>TM - Search...</title>
+{% endblock %}
+
+{% block content %}
+   <div class="header" id="header02">
+      <h4>Search Results</h4>
+      <!-- Results for the query <b>{{request.GET.query}}</b> -->
+      <div class="dropdown_lists">
+         {% include 'taskmanager_app/html_snippets/dropdown_completed_state.html' %} 
+         {% include 'taskmanager_app/html_snippets/dropdown_dates_state.html' %} 
+         {% include 'taskmanager_app/html_snippets/dropdown_expand_item_state.html' %}  
+      </div>
+   </div>
+   <div class="between-header02-and-fixed-content-bottom">
+      {% include 'taskmanager_app/html_snippets/list_of_object_list.html' %} 
+   </div>
+{% endblock %}

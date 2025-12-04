@@ -1,0 +1,6 @@
+{% if tag.name in main_categories %}
+    <a href="{% url 'main_category-show' tag.name|lower %}">
+        <b>{{ tag.name }}</b></a>{% if not forloop.last %}, {% endif %}
+{% else %}
+    {% include 'taskmanager_app/html_snippets/tags_without_links.html' %}
+{% endif %}

@@ -1,0 +1,9 @@
+{% load martortags %}
+
+<ul class="no-bullets">
+    {% for item in items %}
+       <li>
+         {% include 'taskmanager_app/html_snippets/list_item_loop.html' %}
+       </li>
+    {% endfor %}
+</ul> 

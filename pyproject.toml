@@ -1,0 +1,34 @@
+[project]
+name = "task-manager"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "django==5.0.6",
+    "django-colorfield~=0.11.0",
+    "django-filter~=24.1",
+    "django-storages~=1.14.2",
+    "django-tables2~=2.7.0",
+    "django-taggit~=5.0.1",
+    "django-tags-input~=6.0.0",
+    "dropbox~=12.0.2",
+    "martor~=1.6.44",
+    "python-dotenv>=1.1.0",
+    "taggit-selectize~=2.11.0",
+]
+
+[dependency-groups]
+dev = [
+    "black>=25.1.0",
+    "click>=8.2.1",
+    "django-queryhunter>=1.0.0",
+    "pylint>=3.3.7",
+    "pytest>=8.4.1",
+    "ruff>=0.12.0",
+]
+
+[tool.ruff]
+line-length = 120
+[tool.pylint]
+max-line-length=120

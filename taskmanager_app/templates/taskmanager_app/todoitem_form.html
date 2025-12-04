@@ -1,0 +1,312 @@
+<!-- taskmanager-web-app/taskmanager_app/templates/taskmanager_app/todoitem_form.html -->
+{% extends "base.html" %}
+{% load static %}
+
+{% block head %}
+   <link href="{% static 'plugins/css/ace.min.css' %}" type="text/css" media="all" rel="stylesheet" />
+   <link href="{% static 'plugins/css/resizable.min.css' %}" type="text/css" media="all" rel="stylesheet" />
+   <link href="{% static 'taggit_selectize/css/selectize.django.css' %}" type="text/css" media="all" rel="stylesheet"/>
+   <link href="{% static 'martor/css/martor.bootstrap.min.css' %}" type="text/css" media="all" rel="stylesheet" />
+   {% if object.id %}
+      <title>TM - {{ object.title }} (ID: {{ object.id }})</title>
+   {% else %}
+      <title>TM - Create new item</title>
+   {% endif %}
+
+   <style>
+      /* Width of title field */
+      #id_title {
+         width: 100%;
+      }
+      #id_sorting_priority {
+         width: 80px;
+      }
+      #id_date_start_earliest_depend_id {
+         width: 80px;
+      }
+      #id_date_start_latest_depend_id {
+         width: 80px;
+      }
+      #id_date_due_depend_id {
+         width: 80px;
+      }
+      #id_date_start_earliest_depend_shift {
+         width: 80px;
+      }
+      #id_date_start_latest_depend_shift {
+         width: 80px;
+      }
+      #id_date_due_depend_shift {
+         width: 80px;
+      }
+
+      /* Autocomplete: Target the autocomplete suggestion dropdown */
+      .ui-menu {
+         background-color: rgb(242, 242, 242); /* Set the background color to white */
+         list-style: none; /* Remove bullets */
+         padding: 0; /* Remove default padding */
+         z-index: 2000;
+         cursor: pointer;
+         font-size: large;
+      }
+      /* Autocomplete: Target individual suggestion items */
+      .ui-menu-item {
+         padding: 0px 5px; /* Add padding to each suggestion item */
+      }
+
+      /* Autocomplete: Hide helper text */
+      .ui-helper-hidden-accessible {
+         display: none !important;
+      }
+  </style>
+{% endblock %}
+
+{% block content %}
+<form action="" method="post" style="font-size: large;">
+   {% csrf_token %}
+   {% if not object.id %}
+       <h5>{{ title }}</h5>
+   {% else %}
+      <p style="margin:5px;"></p>
+   {% endif %}
+   {{ form.title }}
+   <ul class="error-message">
+      {% for error in form.title.errors %}
+         <li>{{ error }}</li>
+      {% endfor %}
+   </ul>
+   {{ form.description }}
+   {{ form.tags }}
+   <table style="font-size: small;">
+      <tr>
+        <td align="left" title="If date is gray, the date is dependent on another date!"><b>Start earliest:</b></td>
+        <td>{{ form.date_start_earliest }}</td>
+      </tr>
+      <tr>
+        <td align="left" title="If date is gray, the date is dependent on another date!"><b>Start latest:</b></td>
+        <td>{{ form.date_start_latest }}</td>
+      </tr>
+      <tr>
+        <td align="left" title="If date is gray, the date is dependent on another date!"><b>Due date:</b></td>
+        <td>{{ form.date_due }}</td>
+      </tr>
+      <tr>
+         <td align="left"><b>Completed?:</b></td>
+         <td>{{ form.completed }}</td>
+      </tr>
+      <tr>
+         <td align="left"><b>Sorting priority:</b></td>
+         <td>{{ form.sorting_priority }}</td>
+      </tr>
+    </table>
+   <button type="button" class="item-header item_collapsible_button {% if request.GET.expand_item_state == 'expanded' %}item_collapsible_button_active{% endif %}" style="font-size: medium;">
+      Make above dates dependent on other dates?
+   </button>
+   <div class="item_collapsible_content" style="{% if request.GET.expand_item_state != 'expanded' %}display: none;{% endif %}; padding: 5px; margin-left: 2px;">
+       <table style="font-size: small;">
+         <tr>
+            <td align="left"><b>Start earliest</b>:</td>
+            <td>{{ form.date_start_earliest_depend }}</td>
+         </tr>
+         <tr>
+            <td align="left">Date field:</td>
+            <td>{{ form.date_start_earliest_depend_type }}</td>
+         </tr>
+         <tr>
+            <td align="left">From item:</td>
+            <td>{{ form.date_start_earliest_depend_id }}</td>
+         </tr>
+         <tr>
+            <td align="left">Shifted with (days):</td>
+            <td>{{ form.date_start_earliest_depend_shift }}</td>
+         </tr>
+         <tr>
+            <td align="left"><b>Start latest</b>:</td>
+            <td>{{ form.date_start_latest_depend }}</td>
+         </tr>
+         <tr>
+            <td align="left">Date field:</td>
+            <td>{{ form.date_start_latest_depend_type }}</td>
+         </tr>
+         <tr>
+            <td align="left">From item:</td>
+            <td>{{ form.date_start_latest_depend_id }}</td>
+         </tr>
+         <tr>
+            <td align="left">Shifted with (days):</td>
+            <td>{{ form.date_start_latest_depend_shift }}</td>
+         </tr>
+         <tr>
+            <td align="left"><b>Due date</b>:</td>
+            <td>{{ form.date_due_depend }}</td>
+         </tr>
+         <tr>
+            <td align="left">Date field:</td>
+            <td>{{ form.date_due_depend_type }}</td>
+         </tr>
+         <tr>
+            <td align="left">From item:</td>
+            <td>{{ form.date_due_depend_id }}</td>
+         </tr>
+         <tr>
+            <td align="left">Shifted with (days):</td>
+            <td>{{ form.date_due_depend_shift }}</td>
+         </tr>
+      </table>      
+   </div>
+   <ul class="error-message">
+      {% for error in form.date_due_depend_id.errors %}
+         <li>{{ error }}</li>
+      {% endfor %}
+   </ul>
+
+   <div class="fixed-content-bottom">
+      {% if object %}
+         <input value="Save" type="submit">
+      {% else %}
+         <input value="Create item" type="submit">
+      {% endif %}
+         <input
+         value="Cancel"
+         type="submit"
+         onclick="location.href='{% url "index" %}'">
+      {% if object %}
+         <input
+         value="Delete"
+         type="button"
+         onclick="location.href=
+         '{% url "item-delete" object.id %}'">
+      {% endif %}
+   </div>
+</form>
+{% if object %}
+   <form action="{% url 'item-copy' object.id %}" method="post" style="font-size: large;">
+      {% csrf_token %}
+      <input type="submit" value="Copy item">
+   </form>
+{% endif %}
+{% endblock %}
+
+{% block js %}
+{{ block.super }}
+<script type="text/javascript" src="{% static 'plugins/js/ace.js' %}"></script>
+<!-- <script type="text/javascript" src="{% static 'plugins/js/touchhandler.js' %}"></script> -->
+<script type="text/javascript">		
+   define=ace.define
+   window.require=ace.require
+</script>
+<script type="text/javascript" src="{% static 'plugins/js/mode-markdown.js' %}"></script>
+<script type="text/javascript" src="{% static 'plugins/js/ext-language_tools.js' %}"></script>
+<script type="text/javascript" src="{% static 'plugins/js/theme-github.js' %}"></script>
+<script type="text/javascript" src="{% static 'plugins/js/typo.js' %}"></script>
+<script type="text/javascript" src="{% static 'plugins/js/spellcheck.js' %}"></script>
+<script type="text/javascript" src="{% static 'plugins/js/highlight.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'plugins/js/resizable.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'plugins/js/emojis.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'taggit_selectize/js/selectize.js' %}"></script>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+<script type="text/javascript" src="{% static 'martor/js/martor.bootstrap.min.js' %}"></script>
+
+<script>
+   // Simulate a click event on the preview tab when the page is loaded and '/item/add/' is not in the URL
+   $(function() {
+     setTimeout(function() {
+     const url = window.location.pathname;
+     const showPreview = !url.includes('/item/add/');
+     if (showPreview) {
+       const previewTab = document.querySelector('[id^="nav-preview-tab-description-"]').id;
+       if (previewTab) {
+         document.getElementById(previewTab).click();
+       }
+     }  
+    }, 10); // Delay execution for 10 milliseconds to work on phone
+   });
+
+   $(function() {
+       $("#id_title").autocomplete({
+           source: "{% url 'autocomplete_titles' %}",
+           minLength: 2,  // Adjust as needed
+       });
+   });
+
+   // Show user warning if user is about to leave the page with unsaved changes to the form
+   $(document).ready(function() {
+      // Function to get form state
+      function getFormState() {
+         var formState = {};
+         $('form input, form select, form textarea').each(function() {
+            formState[$(this).attr('name')] = $(this).val();
+         });
+         return formState;
+      }
+
+      // Initial form state
+      var initialFormState = getFormState();
+
+      // Function to check if form is dirty
+      function isFormDirty() {
+         var currentFormState = getFormState();
+         for (var key in initialFormState) {
+            if (initialFormState[key] !== currentFormState[key]) {
+                  return true;
+            }
+         }
+         return false;
+      }
+
+      // Add event listeners
+      $('form input, form select, form textarea').on('input change', function() {
+         isFormDirty();
+      });
+
+      // Before unload event
+      window.onbeforeunload = function() {
+         if (isFormDirty()) {
+            return 'You have unsaved changes. Are you sure you want to leave?';
+         }
+      };
+
+            // Reset isFormDirty on form submit
+            $('form').submit(function() {
+         initialFormState = getFormState(); // Reset initial state
+      });
+
+      // Handle Taggit selectize change event
+      $('#id_tags').change(function() {
+         isFormDirty();
+      });
+   });  
+
+   // Highlight date fields if they are dependent on other date fields
+   $(document).ready(function() {
+      // Function to check dependency fields and highlight corresponding date fields
+      function checkDependency(fieldId, dependId) {
+         var dependValue = $(dependId).val();
+         
+         if (dependValue !== "do_not_overrule") {
+            $(fieldId).addClass('date-highlight-gray');
+         } else {
+            $(fieldId).removeClass('date-highlight-gray');
+         }
+      }
+
+      // Check all fields when the page loads
+      function checkAllDependencies() {
+         checkDependency('#id_date_start_earliest', '#id_date_start_earliest_depend');
+         checkDependency('#id_date_start_latest', '#id_date_start_latest_depend');
+         checkDependency('#id_date_due', '#id_date_due_depend');
+      }
+
+      // Initial check when the page loads
+      checkAllDependencies();
+
+      // Re-check when any dependency field changes
+      $('#id_date_start_earliest_depend, #id_date_start_latest_depend, #id_date_due_depend').change(function() {
+         checkAllDependencies();
+      });
+   });
+</script>
+{% endblock %}

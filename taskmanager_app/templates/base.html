@@ -1,0 +1,343 @@
+<!-- taskmanager-web-app/taskmanager_app/templates/base.html -->
+<!-- Base template -->
+{% load static %}
+<!doctype html>
+<html lang="en">
+   <head>
+      <!-- Required meta tags -->
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <!--Main scripts-->
+      <script type="text/javascript" src="{% static 'plugins/js/jquery.min.js' %}"></script>
+      <script type="text/javascript" src="{% static 'plugins/js/bootstrap.min.js' %}"></script>
+      <!--Simple.css-->
+      <link href="{% static 'plugins/css/bootstrap.min.css' %}" type="text/css" media="all" rel="stylesheet" />
+      <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+      {% block head %}{% endblock %}
+      <title>Task manager</title>
+   </head>
+   <body>
+      <div>
+         <div class="header" id="header01">
+            <div>
+               <a href="{% url 'index' %}">Home</a> - 
+               <a href="{% url 'item-add' %}">New item</a> - 
+               <a href="{% url 'edit-item-by-title' 'Inbox' %}">Inbox</a>
+            </div>
+            <form action="{% url 'search_results' %}" method="get">
+               <input name="query" type="text" {% if request.GET.query %}value="{{request.GET.query}}"{%else%}placeholder="Search..."{% endif %}>
+               <!-- <button type="submit">Search</button> -->
+            </form>
+         </div>
+         <div class="block_content">
+            {% block content %}
+               This content will be replaced by different html code for each page.
+            {% endblock %}
+         </div>
+      </div>
+      {% block js %}{% endblock %}
+   </body>
+
+   <script>
+      // Update URL with user selected showCompletedSelect
+      const showCompletedSelect = document.getElementById('showCompletedSelect');
+      if (showCompletedSelect) {
+         document.getElementById('showCompletedSelect').addEventListener('change', function() {
+         const urlParams = new URLSearchParams(window.location.search);
+         const showCompletedSelect = document.getElementById('showCompletedSelect');
+         const selectedOption = showCompletedSelect.options[showCompletedSelect.selectedIndex];
+         urlParams.set('completed_state', selectedOption.value);
+         const newURL = window.location.pathname + '?' + urlParams.toString();
+         window.location.href = newURL;
+         })
+      };
+
+      // Update URL with user selected showDatesSelect
+      const showDatesSelect = document.getElementById('showDatesSelect');
+      if (showDatesSelect) {
+         document.getElementById('showDatesSelect').addEventListener('change', function() {
+         const urlParams = new URLSearchParams(window.location.search);
+         const showDatesSelect = document.getElementById('showDatesSelect');
+         const selectedOption = showDatesSelect.options[showDatesSelect.selectedIndex];
+         urlParams.set('dates_state', selectedOption.value);
+         const newURL = window.location.pathname + '?' + urlParams.toString();
+         window.location.href = newURL;
+         })
+      };
+
+      // Script for expand/collapse ALL dropdown menu (used AFTER loading of page)
+      const showExpandItemSelect = document.getElementById('showExpandItemSelect');
+      if (showExpandItemSelect) {
+         document.getElementById('showExpandItemSelect').addEventListener('change', function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            const showExpandItemSelect = document.getElementById('showExpandItemSelect');
+            const selectedOption = showExpandItemSelect.options[showExpandItemSelect.selectedIndex];
+            urlParams.set('expand_item_state', selectedOption.value);
+
+            // Determine whether to expand or collapse based on the selected option
+            const expand = selectedOption.value === 'expanded';
+
+            // Loop through all elements with the "item_collapsible_button" class and toggle their state
+            const collapsibleElements = document.querySelectorAll('.item_collapsible_button');
+            collapsibleElements.forEach((element) => {
+               if (expand) {
+                     element.classList.add('item_collapsible_button_active');
+                     element.nextElementSibling.style.display = 'block';
+               } else {
+                     element.classList.remove('item_collapsible_button_active');
+                     element.nextElementSibling.style.display = 'none';
+               }
+            });
+
+            const newURL = window.location.pathname + '?' + urlParams.toString();
+            // Use replaceState to update the URL without triggering a page reload
+            window.history.replaceState({}, '', newURL);
+         })
+      };
+
+      // Function for expand/collapse ALL dropdown menu (used DURING page loading)
+      $(function() {
+         const urlParams = new URLSearchParams(window.location.search);
+         const expandItemState = urlParams.get('expand_item_state');
+
+         // Determine whether to expand or collapse based on the expand_item_state parameter
+         const expand = expandItemState === 'expanded';
+
+         // Loop through all elements with the "item_collapsible_button" class and toggle their state
+         const collapsibleElements = document.querySelectorAll('.item_collapsible_button');
+         collapsibleElements.forEach((element) => {
+            if (element.classList.contains('header')) {
+               // Always expand elements with the "header" class
+               element.classList.add('item_collapsible_button_active');
+               element.nextElementSibling.style.display = 'block';
+            } else {
+               // Collapse all other elements by default or based on URL parameter
+               if (expand) {
+                  element.classList.add('item_collapsible_button_active');
+                  element.nextElementSibling.style.display = 'block';
+               } else {
+                  element.classList.remove('item_collapsible_button_active');
+                  element.nextElementSibling.style.display = 'none';
+               }
+            }
+         });
+      });
+
+      // Script for collapsible item lists (used AFTER loading of page, when user clicks on the collapsible item)
+      var coll = document.getElementsByClassName("item_collapsible_button");
+      var i;
+      for (i = 0; i < coll.length; i++) {
+      coll[i].addEventListener("click", function() {
+         this.classList.toggle("item_collapsible_button_active");
+         var content = this.nextElementSibling;
+         if (content.style.display === "block") {
+            content.style.display = "none";
+         } else {
+            content.style.display = "block";
+         }
+      });
+      }
+
+      // Function to calculate and set the top value for headers
+      $(function() {
+         var headers = document.querySelectorAll('.header'); // Get all headers
+         var top02 = 0; // Initialize top value for header02
+         var top03 = 0; // Initialize top value for header03
+         var top04 = 0; // Initialize top value for header04
+         var h = window.innerHeight;
+
+         // Loop through each header to find top values for header0X
+         for (var i = 0; i < headers.length; i++) {
+            var header = headers[i];
+            if (header.id === 'header01' && top02 == 0){
+               top02 = header.offsetHeight
+            } else if (header.id === 'header02' && top03 == 0){
+               // If header02 (main category header + text) is more than half scrollable area, then hide during scrolling
+               if (header.offsetHeight > (h-top02)/2) {
+                  top03 = top02
+
+                  top02 = 0.001
+                  header.style.zIndex = -1
+                  header.style.position = 'static'
+               } else {
+                  top03 = top02 + header.offsetHeight
+               }
+            } else if (header.id === 'header03' && top04 == 0){
+               top04 = top03 + header.offsetHeight
+            } else if (top02 != 0 && top03 != 0 && top04 != 0){
+               break;
+            }
+         }
+
+         // Loop through each header to set top values for header0X
+         for (var i = 0; i < headers.length; i++) {
+            var header = headers[i];
+            if (header.id === 'header02'){
+               header.style.top = top02 + 'px'; // Set the top value for header02
+            } else if (header.id === 'header03'){
+               header.style.top = top03 + 'px'; // Set the top value for header03
+            } else if (header.id === 'header04'){
+               header.style.top = top04 + 'px'; // Set the top value for header04
+            }
+         }
+      });   
+   </script>
+
+   <style type="text/css">
+      .header {
+         position: sticky;
+         top: 0;
+         z-index: 1000; /* Set a high z-index to ensure it's on top of other elements */
+         padding: 1px; /* Add padding to give it some spacing */ 
+         margin: 0px;
+      }
+      #header01 { /* Top menu always visible */
+         background-color: rgb(151, 151, 151);
+         padding: 3px;
+         border-bottom: 1px solid #000000;
+         font-size: large;
+      }
+      #header02 { /* Local top menu */
+         background-color: white;
+         padding-bottom: 5px;
+         font-size: large;
+      }      
+      #header03 { /* Tag category top-level (0) */
+         background-color: rgb(152, 190, 190);
+         font-size: large;
+      }
+      #header04 { /* Tag category sub-level (-1) */
+         background-color: rgb(173, 216, 216);
+         font-size: large;
+         width: 100%;
+         text-align: left;
+         border: none;
+      }
+      .item-header { /* Item title level (-2) */
+         background-color: rgb(243, 251, 255);
+         font-size: large;
+         width: 100%;
+         border-color: #d3d3d3;
+         border-width: 1px;
+         text-align: left;    
+         display: flex;
+         align-items: stretch; /* Ensures content inside the button is vertically centered */
+      }
+      .main-category-vertical-bar {
+         width: 5px; /* Width of the vertical bar */
+         margin-right: 0px; /* Space between the bar and the text */
+         flex-shrink: 0; /* Prevent shrinking */
+      }
+      .item-title {
+         flex: auto; /* Allow title to take up remaining space */
+         align-items: center; /* Vertically center the text */
+         margin-left: 2px;
+         display: block;  /* Ensures ellipsis is applied correctly */
+      }
+      /* Default (collapsed) state */
+      .item_collapsible_button:not(.item_collapsible_button_active) .item-title {
+         white-space: nowrap;
+         overflow: hidden;
+         text-overflow: ellipsis;
+      }
+      /* Active (expanded) state */
+      .item_collapsible_button_active .item-title {
+         white-space: normal;  /* Allow text to wrap */
+         overflow: visible;    /* Allow overflow */
+         text-overflow: unset; /* Remove ellipsis */
+      }
+
+      .item-content {
+         background-color: white;
+         font-size: small;
+         margin-left: 10px;
+         margin-right: 10px;
+      }
+
+      /* Create a scrolling area for the block content above the fixed-content-bottom */
+      .block_content {
+         margin-bottom: 35pt;
+         margin-left: 3px;
+         margin-right: 3px;
+      }
+      .between-header02-and-fixed-content-bottom {
+         margin-left: 5px;
+      }
+      .fixed-content-bottom {
+         position: fixed;
+         bottom: 0;
+         left: 0;
+         padding: 3px;
+         width: 100%;
+         background-color: rgb(151, 151, 151);
+         border-top: 1px solid #000000;
+         z-index: 1000;
+         font-size: large;
+      }
+
+      .item_collapsible_button { /* only function, no styling (see #header05 for styling) */
+         cursor: pointer;    
+      }
+      .item_collapsible_button_active, .item_collapsible_button:hover{
+         background-color: rgb(208, 217, 222);
+      }
+      .item_collapsible_content {
+         display: none;
+         overflow: hidden;
+      }
+      .tiny_tags_dates {
+         font-size: medium;
+      }
+
+      .no-bullets {
+         list-style-type: none; /* Removes default bullet style */
+         margin: 0px;
+         padding-left: 0px;
+      }
+
+      .date-highlight-gray {
+         background-color: #a2a2a2;
+         border-color: #4b4b4b;
+      }
+      .error-message {
+         color: red;
+         list-style-type: none; /* Remove bullet point */
+         font-style: italic;
+      }
+      .dropdown_lists {
+         display: flex; 
+         gap: 5px; 
+         font-size: medium;
+      }
+
+      .sorting-view-table-cell-content {
+         text-align: right;
+         font-size: 7px;
+         padding: 0px;
+         margin: 0px;
+         width: 50px;
+      }
+
+      .table-cell {
+         padding: 0 3px;
+         font-size: small;
+      }
+
+      #table-cell-header {
+         font-size: small;
+      }
+
+      #table-cell-content {
+         font-size: small;
+      }
+
+      .copy-item-simple-string-link input[type="submit"] {
+         background: none;
+         border: none;
+         text-decoration: underline;
+         cursor: pointer;
+         display: inline;
+         padding: 0;
+      }
+   </style>
+</html>

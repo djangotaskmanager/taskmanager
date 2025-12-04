@@ -1,0 +1,3 @@
+<form method="GET" >
+    <input name="filter_item_list" type="text" {% if request.GET.filter_item_list %}value="{{request.GET.filter_item_list}}"{%else%}placeholder="Filter items..."{% endif %}>
+</form>

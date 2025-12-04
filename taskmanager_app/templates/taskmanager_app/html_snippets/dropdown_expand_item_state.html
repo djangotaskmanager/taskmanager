@@ -1,0 +1,6 @@
+<form id="filter-form" method="GET">
+    <select name="expand_item_state" id="showExpandItemSelect">
+    <option value="collapsed" {% if request.GET.expand_item_state == "collapsed" %}selected{% endif %}>Collapse all</option>
+    <option value="expanded" {% if request.GET.expand_item_state == "expanded" %}selected{% endif %}>Expand all</option>
+    </select>
+</form>

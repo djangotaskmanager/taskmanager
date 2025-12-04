@@ -1,0 +1,61 @@
+<!-- taskmanager-web-app/taskmanager_app/templates/taskmanager_app/maincategoryitem_form.html -->
+{% extends "base.html" %}
+{% load static %}
+
+{% block head %}
+   <link href="{% static 'taggit_selectize/css/selectize.django.css' %}" type="text/css" media="all" rel="stylesheet"/>
+   <title>TM - {{ title }}</title>
+{% endblock %}
+
+{% block content %}
+<h4>{{ title }}</h4>
+<form action="" method="post">
+   {% csrf_token %}
+   <table>
+      <tr>
+         Main category: {{ form.main_category }}
+         <ul class="error-message">
+            {% for error in form.main_category.errors %}
+               <li>{{ error }}</li>
+            {% endfor %}
+         </ul>
+      </tr>
+      <tr>Sub categories: {{ form.sub_categories }}
+      </tr>
+      <tr>Excluded tags: {{ form.excluded_tags }}
+      </tr>
+      <tr><div title="To find the item ID, go to the desired item and see the ID from the url.">Main category description text from item-id: {{ form.text_field_from_item }}</div>
+      </tr>
+      <tr><div title="Pick a color to be used as highlighter of the main category.">Main category color: {{ form.color }}</div>
+      </tr>
+      <tr>Sorting parameter: {{ form.sorting_priority }}
+      </tr>
+   </table>
+
+   <div class="fixed-content-bottom">
+      {% if object %}
+      <input value="Save" type="submit">
+      {% else %}
+      <input value="Create category" type="submit">
+      {% endif %}
+      <input
+      value="Cancel"
+      type="button"
+      onclick="location.href='{% url "index" %}'">
+      {% if object %}
+      <input
+      value="Delete"
+      type="button"
+      onclick="location.href=
+      '{% url "main_category-delete" url_id|lower %}'">
+      {% endif %}
+   </div>  
+</form>
+{% endblock %}
+
+{% block js %}
+{{ block.super }}
+<script type="text/javascript" src="{% static 'colorfield/colorfield.js' %}"></script>
+<script type="text/javascript" src="{% static 'colorfield/jscolor/jscolor.js' %}"></script>
+<script type="text/javascript" src="{% static 'taggit_selectize/js/selectize.js' %}"></script>
+{% endblock %}

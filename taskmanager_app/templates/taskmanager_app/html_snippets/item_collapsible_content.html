@@ -1,0 +1,23 @@
+{% load martortags %}
+
+<div class="item-content item_collapsible_content" style="{% if request.GET.expand_item_state != 'expanded' %}display: none;{% endif %}">
+    <div class="tiny_tags_dates">
+       <a href="{{ item.get_absolute_url }}">Edit</a> - 
+       <a href="{% url 'item-delete' item.id %}">Delete</a> -
+       <form action="{% url 'item-copy' item.id %}" method="post" style="display: inline;" class="copy-item-simple-string-link">
+          {% csrf_token %}
+          <input type="submit" value="Copy">
+       </form> <b>|</b>
+       {% if item.completed %}&#x2713;{% else %}&#x2717;{% endif %}
+       {% if item.tags.all %}
+       <b>|</b>  {% for tag in item.tags.all %}
+                {% include 'taskmanager_app/html_snippets/tags_with_links.html' %}
+             {% endfor %}
+       {% endif %}
+       {% if item.date_start_earliest %} <b>|</b> <i>Start earliest:</i> {{ item.date_start_earliest|date:"d/m/y" }}{% endif %}
+       {% if item.date_start_latest %} - <i>Start latest:</i> {{ item.date_start_latest|date:"d/m/y" }} {% endif %}
+       {% if item.date_due %} - <i>Due date:</i> {{ item.date_due|date:"d/m/y" }}{% endif %}
+       {% if item.date_start_earliest or item.date_start_latest or item.date_due%}<br>{% endif %}
+    </div>
+   <p>{{item.description|safe_markdown}}</p>
+</div>

@@ -1,0 +1,8 @@
+<form id="filter-form" method="GET">
+    <!-- <label for="filter-form">Show:</label> -->
+    <select name="completed_state" id="showCompletedSelect">
+    <option value="all" {% if request.GET.completed_state == "all" %}selected{% endif %}>Show all</option>
+    <option value="completed" {% if request.GET.completed_state == "completed" %}selected{% endif %}>Completed</option>
+    <option value="not_completed" {% if request.GET.completed_state == "not_completed" %}selected{% endif %}>Not Completed</option>
+    </select>
+</form>

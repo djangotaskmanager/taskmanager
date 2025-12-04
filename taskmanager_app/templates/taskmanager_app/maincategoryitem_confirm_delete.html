@@ -1,0 +1,21 @@
+<!-- taskmanager-web-app/taskmanager_app/templates/taskmanager_app/maincategoryitem_confirm_delete.html -->
+{% extends "base.html" %}
+
+{% block head %}
+  <title>TM - Delete {{ title }}</title>
+{% endblock %}
+
+{% block content %}
+<h5>Delete main category</h5>
+<p>Are you sure you want to delete the main category: <b>{{ title }}</b>?</p>
+<form method="POST">
+   {% csrf_token %}
+   <input
+      value="Yes!"
+      type="submit">
+   <input
+   value="No!"
+   type="button"
+   onclick="location.href='{% url "index" %}';">
+</form>
+{% endblock %}

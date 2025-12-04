@@ -1,0 +1,8 @@
+<form id="filter-form" method="GET">
+    <!-- <label for="filter-form">Show:</label> -->
+    <select name="dates_state" id="showDatesSelect">
+    <option value="all" {% if request.GET.dates_state == "all" %}selected{% endif %}>Show all</option>
+    <option value="w_dates" {% if request.GET.dates_state == "w_dates" %}selected{% endif %}>With dates</option>
+    <option value="wo_dates" {% if request.GET.dates_state == "wo_dates" %}selected{% endif %}>Without dates</option>
+    </select>
+</form>

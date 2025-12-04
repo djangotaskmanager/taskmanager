@@ -1,0 +1,79 @@
+<!-- taskmanager-web-app/taskmanager_app/templates/taskmanager_app/todo_list_view.html -->
+{% extends "base.html" %}
+{% load martortags %}
+
+{% block head %}
+  <title>TM - Sort by date view</title>
+{% endblock %}
+
+{% block content %}
+   <div class="header" id="header02">
+      <h4>Sort by date view</h4>
+      <div class="dropdown_lists">
+         {% include 'taskmanager_app/html_snippets/dropdown_completed_state.html' %}
+         {% include 'taskmanager_app/html_snippets/dropdown_expand_item_state.html' %}
+         {% include 'taskmanager_app/html_snippets/dropdown_sort_by_date_state.html' %} 
+      </div>
+      <div class="dropdown_lists">
+         {% include 'taskmanager_app/html_snippets/filter_items_field.html' %}
+      </div>
+   </div>
+   <div class="between-header02-and-fixed-content-bottom">
+      {% for group_key, items in items_grouped_by_date.items %}
+          {% if items %}
+              <div class="header" id="header03">
+                  {{ group_key }}
+              </div>
+              <ul class="no-bullets">
+                  {% for item in items %}
+                    <li>
+                        <button type="button" class="item-header item_collapsible_button {% if request.GET.expand_item_state == 'expanded' %}item_collapsible_button_active{% endif %}">
+                            {% include 'taskmanager_app/html_snippets/main_category_vertical_bar.html' %}
+                            <table style="width: 100%; table-layout: fixed;">
+                                <tbody>
+                                    <tr>
+                                        <td rowspan="3" style="text-align: left; margin: 0; padding: 0;">
+                                            <span class="item-title">{{ item.title }}</span>
+                                        </td>
+                                        <td class="sorting-view-table-cell-content" title="Start earliest" style="color: {% if item.date_start_earliest < today %}red{% elif item.date_start_earliest <= one_week_from_now %}orange{% else %}black{% endif %};">
+                                            {% if item.date_start_earliest %} SE: {{ item.date_start_earliest|date:"d/m/y" }} {% else %} &nbsp {% endif %}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="sorting-view-table-cell-content" title="Start latest" style="color: {% if item.date_start_latest < today %}red{% elif item.date_start_latest <= one_week_from_now %}orange{% else %}black{% endif %};">
+                                            {% if item.date_start_latest %} SL: {{ item.date_start_latest|date:"d/m/y" }} {% else %} &nbsp {% endif %}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="sorting-view-table-cell-content" title="Due date" style="color: {% if item.date_due < today %}red{% elif item.date_due <= one_week_from_now %}orange{% else %}black{% endif %};">
+                                            {% if item.date_due %} DD: {{ item.date_due|date:"d/m/y" }} {% else %} &nbsp {% endif %}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </button>
+                        {% include 'taskmanager_app/html_snippets/item_collapsible_content.html' %}
+                    </li>
+                {% endfor %}
+               </ul>
+          {% endif %}
+      {% endfor %}
+  </div>  
+{% endblock %}
+
+{% block js %}
+   <script>
+      // Update URL with user selected showDateSelect
+      const showDateSelect = document.getElementById('showDateSelect');
+      if (showDateSelect) {
+         document.getElementById('showDateSelect').addEventListener('change', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const showDateSelect = document.getElementById('showDateSelect');
+            const selectedOption = showDateSelect.options[showDateSelect.selectedIndex];
+            urlParams.set('sort_by_date_state', selectedOption.value);
+            const newURL = window.location.pathname + '?' + urlParams.toString();
+            window.location.href = newURL;
+         })
+      };
+   </script>
+{% endblock %}

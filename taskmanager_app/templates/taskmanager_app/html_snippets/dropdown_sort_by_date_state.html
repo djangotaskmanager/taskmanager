@@ -1,0 +1,9 @@
+<form id="filter-form" method="GET">
+    <!-- <label for="filter-form">Next:</label> -->
+    <select name="sort_by_date_state" id="showDateSelect">
+    <option value="infinite" {% if request.GET.sort_by_date_state == "infinite" %}selected{% endif %}>Infinite</option>
+    <option value="one_week" {% if request.GET.sort_by_date_state == "one_week" %}selected{% endif %}>One week</option>
+    <option value="two_weeks" {% if request.GET.sort_by_date_state == "two_weeks" %}selected{% endif %}>Two weeks</option>
+    <option value="one_month" {% if request.GET.sort_by_date_state == "one_month" %}selected{% endif %}>One month</option>
+    </select>
+</form>
